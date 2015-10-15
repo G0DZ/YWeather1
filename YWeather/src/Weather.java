@@ -13,7 +13,7 @@ public class Weather {
 		// TODO Auto-generated constructor stub
 	}
 	public String toString() {
-		return "Weather[city = " + city
+		return  "city = " + city
 				+ ", country = " + country 
 				+ ", time = " + time
 				+ ", temperature = " + temperature
@@ -21,7 +21,6 @@ public class Weather {
 				+ ", windDirection = " + windDirection
 				+ ", windSpeed = " + windSpeed
 				+ ", humidity = " + humidity
-				+ ", pressure = " + pressure
-				+ "]";
+				+ ", pressure = " + pressure;
 	}
 }

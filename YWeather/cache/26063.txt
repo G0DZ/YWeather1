@@ -1,0 +1,9 @@
+city = Санкт-Петербург
+country = Россия
+time = 2015-10-15T15:00:00
+temperature = 10
+weatherType = малооблачно
+windDirection = w
+windSpeed = 3.0
+humidity = 78
+pressure = 774
