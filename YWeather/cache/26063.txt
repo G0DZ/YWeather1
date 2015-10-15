@@ -1,0 +1,9 @@
+city = Санкт-Петербург
+country = Россия
+time = 2015-10-15T00:30:00
+temperature = 3
+weatherType = пасмурно
+windDirection = w
+windSpeed = 1.0
+humidity = 87
+pressure = 771

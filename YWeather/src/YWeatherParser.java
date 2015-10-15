@@ -13,7 +13,7 @@ public class YWeatherParser {
 	private static Weather factWeather = new Weather();
 	//private static Weather tommorowWeather = new Weather();
 	
-	public static Weather parse(String cityID) {
+	public static Weather getWeather(String cityID) {
 		//проверяем, есть ли файл, и не превышен ли порог времени хранения
 		if(checkCache(cityID))
 		{// если файл есть - загрузим информацию из него

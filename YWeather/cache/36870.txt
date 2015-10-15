@@ -1,0 +1,9 @@
+city = Алматы
+country = Казахстан
+time = 2015-10-11T02:30:00
+temperature = 16
+weatherType = малооблачно
+windDirection = e
+windSpeed = 2.0
+humidity = 51
+pressure = 703
