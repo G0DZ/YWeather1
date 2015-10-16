@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.JOptionPane;
@@ -42,6 +43,33 @@ public class YWeatherParser {
 		return factWeather;
 		}
 		
+	//получаем погоду, разбира€ массив строк
+	//единый интерфейс, используетс€ при разборе текстового файла и ответа, приход€щего клиенту
+	//потому имеет видимость public
+	public static Weather parseAnswer(ArrayList<String> list){
+		String str = null;
+		Weather w = new Weather();
+		str = list.get(0);
+		w.city = str.substring(7,str.length());	//city = TEST
+		str = list.get(1);
+		w.country = str.substring(10,str.length());	//country = TEST
+		str = list.get(2);
+		w.time = str.substring(7,str.length());	//time = TEST
+		str = list.get(3);
+		w.temperature = str.substring(14,str.length());	//temperature = TEST
+		str = list.get(4);
+		w.weatherType = str.substring(14,str.length());	//weatherType = TEST
+		str = list.get(5);
+		w.windDirection = str.substring(16,str.length());	//windDirection = TEST
+		str = list.get(6);
+		w.windSpeed = str.substring(12,str.length());	//windSpeed = TEST
+		str = list.get(7);
+		w.humidity = str.substring(11,str.length());	//humidity = TEST
+		str = list.get(8);
+		w.pressure = str.substring(12,str.length());	//pressure = TEST
+		System.out.println("HELLO\n\n"+w.toString());
+		return w;
+	}
 		
 	private static boolean checkCache(String cityID){
 		File cachefile = new File("cache/"+cityID+".txt");
@@ -97,7 +125,8 @@ public class YWeatherParser {
             	break;
             }
         }
-        //System.out.print(factWeather.toString());
+        System.out.println("ѕогода загружена из интернета. ѕопытка чтени€");
+        System.out.print(factWeather.toString());
 	}
 	
 	private static void writeFile(String cityID){
@@ -123,26 +152,17 @@ public class YWeatherParser {
 		File cachefile = new File("cache/"+cityID+".txt");
 		try(BufferedReader reader = new BufferedReader(new FileReader(cachefile)))
         {
-			//разбор текстового файла 
-        	String str = reader.readLine();
-			factWeather.city = str.substring(7,str.length());	//city = TEST
-			str = reader.readLine();
-			factWeather.country = str.substring(10,str.length());	//country = TEST
-			str = reader.readLine();
-			factWeather.time = str.substring(7,str.length());	//time = TEST
-			str = reader.readLine();
-			factWeather.temperature = str.substring(14,str.length());	//temperature = TEST
-			str = reader.readLine();
-			factWeather.weatherType = str.substring(14,str.length());	//weatherType = TEST
-			str = reader.readLine();
-			factWeather.windDirection = str.substring(16,str.length());	//windDirection = TEST
-			str = reader.readLine();
-			factWeather.windSpeed = str.substring(12,str.length());	//windSpeed = TEST
-			str = reader.readLine();
-			factWeather.humidity = str.substring(11,str.length());	//humidity = TEST
-			str = reader.readLine();
-			factWeather.pressure = str.substring(12,str.length());	//pressure = TEST
-			//System.out.println("HELLO\n\n"+factWeather.toString());
+			System.out.println("ќбнаружен файл. ѕопытка чтени€");
+			ArrayList<String> list = new ArrayList<String>(); //arraylist дл€ хранени€ содержимого файла
+			String str = null; //строка, используема€ дл€ записи
+			while((str=reader.readLine())!=null)
+			{
+				list.add(str);
+				System.out.println(str);
+			}
+			
+			//получаем погоду, разбира€ массив строк
+			factWeather = YWeatherParser.parseAnswer(list);
         }
         catch(IOException ex){
             System.out.println(ex.getMessage());
