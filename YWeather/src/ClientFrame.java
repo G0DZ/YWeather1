@@ -1,4 +1,5 @@
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 
@@ -6,13 +7,16 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 public class ClientFrame extends JFrame {
 	private static final long serialVersionUID = 5506524279338381258L;
 	static JButton button_start;	//кнопка обновления погоды
-	static JLabel TEST_WeatherText; //вывод погоды в текстовом виде
+	JTextField textField; 
+	JTextArea TEST_WeatherText; //вывод погоды в текстовом виде
 	static String button_start_txt = "Обновить";
 	JPanel p1;
 	public ClientFrame(){
@@ -28,23 +32,28 @@ public class ClientFrame extends JFrame {
 		
 		button_start = new JButton("Cursor.HAND_CURSOR"); //создаем кнопку.
 		button_start.setText(button_start_txt);
-		TEST_WeatherText = new JLabel("");
+		textField = new JTextField();
+		TEST_WeatherText = new JTextArea("");
+		TEST_WeatherText.setEnabled(false);
+		TEST_WeatherText.setFont(new Font("Calibri", Font.PLAIN, 16));
 		
 		//устанавливаем размер элементов
-		TEST_WeatherText.setBounds(0, 0, 300, 100);
-		button_start.setBounds(50, 105, 200, 30);
+		TEST_WeatherText.setBounds(0, 0, 300, 300);
+		textField.setBounds(50, 305, 200, 20);
+		button_start.setBounds(50, 330, 200, 30);
 		
 		//настраиваем действия на кнопки
-		ClientFrameEngine cEngine = new ClientFrameEngine();
+		ClientFrameEngine cEngine = new ClientFrameEngine(this);
 		button_start.addActionListener(cEngine);
 		
 		//добавляем элементы на панель
 		p1 = new JPanel();
 		p1.setLayout(null);
 		p1.add(TEST_WeatherText);
+		p1.add(textField);
 		p1.add(button_start);
 		getContentPane().add(p1);
-		setPreferredSize(new Dimension(300, 165));
+		setPreferredSize(new Dimension(300, 395));
 		
 		this.pack(); 
 		

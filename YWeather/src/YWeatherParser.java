@@ -2,7 +2,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
@@ -34,7 +34,8 @@ public class YWeatherParser {
 				} catch (Exception ex) {
 					JOptionPane.showMessageDialog(null,
 							"Ошибка при запросе к Яндекс АПИ");
-					ex.printStackTrace();
+					return null;
+					//ex.printStackTrace();
 				}
 			parseDoc(doc);
 			writeFile(cityID);
@@ -50,24 +51,24 @@ public class YWeatherParser {
 		String str = null;
 		Weather w = new Weather();
 		str = list.get(0);
-		w.city = str.substring(7,str.length());	//city = TEST
+		w.city = str.substring(5,str.length());	//city = TEST
 		str = list.get(1);
-		w.country = str.substring(10,str.length());	//country = TEST
+		w.country = str.substring(8,str.length());	//country = TEST
 		str = list.get(2);
-		w.time = str.substring(7,str.length());	//time = TEST
+		w.time = str.substring(5,str.length());	//time = TEST
 		str = list.get(3);
-		w.temperature = str.substring(14,str.length());	//temperature = TEST
+		w.temperature = str.substring(12,str.length());	//temperature = TEST
 		str = list.get(4);
-		w.weatherType = str.substring(14,str.length());	//weatherType = TEST
+		w.weatherType = str.substring(12,str.length());	//weatherType = TEST
 		str = list.get(5);
-		w.windDirection = str.substring(16,str.length());	//windDirection = TEST
+		w.windDirection = str.substring(14,str.length());	//windDirection = TEST
 		str = list.get(6);
-		w.windSpeed = str.substring(12,str.length());	//windSpeed = TEST
+		w.windSpeed = str.substring(10,str.length());	//windSpeed = TEST
 		str = list.get(7);
-		w.humidity = str.substring(11,str.length());	//humidity = TEST
+		w.humidity = str.substring(9,str.length());	//humidity = TEST
 		str = list.get(8);
-		w.pressure = str.substring(12,str.length());	//pressure = TEST
-		System.out.println("HELLO\n\n"+w.toString());
+		w.pressure = str.substring(9,str.length());	//pressure = TEST
+		//System.out.println("HELLO\n\n"+w.toString());
 		return w;
 	}
 		
@@ -79,14 +80,28 @@ public class YWeatherParser {
 			long b = cachefile.lastModified();
 			if((a-b) > 1000*60*60) //один час в миллисекундах
 			{
-			//	System.out.print("Файл с таким именем НЕсуществует, GHBDTN!");
+			//	System.out.print("Файл устарел, GHBDTN!");
 				return false;
 			}
 			//System.out.print("Файл с таким именем существует!");
 			return true;	
 		}
-		//System.out.print("Файл с таким именем НЕсуществует!");
+		//System.out.print("Файл с таким именем НЕ существует!");
 		return false;
+	}
+	
+	public static ArrayList<String> splitAnswer(String str){
+		str = str.replace(" ","");
+		StringTokenizer stk = new StringTokenizer(str,","); //логические отрезки разделены запятыми	    
+	    int z = stk.countTokens(); //количество разделителей в строке
+	    ArrayList<String> list = new ArrayList<String>();
+	    //System.out.println("Тестирование метода parseAnswer\n");
+	    for(int i = 0; i<z; i++)
+	    {
+	    	list.add(stk.nextToken());
+	    	//System.out.println(list.get(i));
+	    }
+	    return list;
 	}
 	
 	private static void parseDoc(Document doc){
@@ -157,10 +172,10 @@ public class YWeatherParser {
 			String str = null; //строка, используемая для записи
 			while((str=reader.readLine())!=null)
 			{
+				str = str.replace(" ", "");
 				list.add(str);
 				System.out.println(str);
 			}
-			
 			//получаем погоду, разбирая массив строк
 			factWeather = YWeatherParser.parseAnswer(list);
         }

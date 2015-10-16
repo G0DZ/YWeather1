@@ -13,14 +13,14 @@ public class Weather {
 		// TODO Auto-generated constructor stub
 	}
 	public String toString() {
-		return  "city = " + city
-				+ ", country = " + country 
-				+ ", time = " + time
-				+ ", temperature = " + temperature
-				+ ", weatherType = " + weatherType
-				+ ", windDirection = " + windDirection
-				+ ", windSpeed = " + windSpeed
-				+ ", humidity = " + humidity
-				+ ", pressure = " + pressure;
+		return  "city=" + city
+				+ ", country=" + country 
+				+ ", time=" + time
+				+ ", temperature=" + temperature
+				+ ", weatherType=" + weatherType
+				+ ", windDirection=" + windDirection
+				+ ", windSpeed=" + windSpeed
+				+ ", humidity=" + humidity
+				+ ", pressure=" + pressure;
 	}
 }

@@ -67,7 +67,10 @@ class OneServer extends Thread {
 			String str = in.readLine(); 		//получаем от клиента номер города
         	//out.println(str);
         	factWeather = YWeatherParser.getWeather(str); 	//получаем погоду города из интернета/кэша 
-        	out.println("closing..."+factWeather.toString());
+        	if(factWeather != null)
+        		out.println(factWeather.toString());
+        	else
+        		out.println("");
 		}
 		catch (IOException e) {
 			System.err.println("IO Exception");
