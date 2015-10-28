@@ -5,72 +5,82 @@ import java.net.*;
 
 public class MultiServer {
 	static final int PORT = 9876;
-   
+
 	public static void main(String[] args) throws IOException {
-		//запуск сервера
+		//Р·Р°РїСѓСЃРє СЃРµСЂРІРµСЂР°
 		ServerSocket s = new ServerSocket(PORT);
 		InitCache.initializeServer();
 		System.out.println("Server Started");
 		try {
 			while (true) {
-				// СЕРВЕР Блокируется до возникновения нового соединения:
+				// РЎР•Р Р’Р•Р  Р‘Р»РѕРєРёСЂСѓРµС‚СЃСЏ РґРѕ РІРѕР·РЅРёРєРЅРѕРІРµРЅРёСЏ РЅРѕРІРѕРіРѕ СЃРѕРµРґРёРЅРµРЅРёСЏ:
 				Socket socket = s.accept();
 				try {
 					new OneServer(socket);
-				}
-				catch (IOException e) {
-					// Если завершится неудачей, закрывается сокет,
-					// в противном случае, нить закроет его:
+				} catch (IOException e) {
+					// Р•СЃР»Рё Р·Р°РІРµСЂС€РёС‚СЃСЏ РЅРµСѓРґР°С‡РµР№, Р·Р°РєСЂС‹РІР°РµС‚СЃСЏ СЃРѕРєРµС‚,
+					// РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ, РЅРёС‚СЊ Р·Р°РєСЂРѕРµС‚ РµРіРѕ:
 					socket.close();
 				}
 			}
-		}
-		finally {
+		} finally {
 			s.close();
 		}
 	}
-	
-	private static class InitCache{
-		private static void initializeServer(){
-			File cachepath = new File("cache");
-			if(!(cachepath.exists() && cachepath.isDirectory())){
-				//System.out.print("Каталог создан!");
-				cachepath.mkdirs();
+	private static class InitCache {
+		private static void initializeServer() {
+			try {
+				//String pathToJar = new File(".").getAbsolutePath(); //РјР±
+				File cachepath = new File("cache/");
+				if (cachepath.exists())
+					System.out.println("РљР°С‚Р°Р»РѕРі СЃСѓС‰РµСЃС‚РІСѓРµС‚!");
+				if (cachepath.isDirectory())
+					System.out.println("РљР°С‚Р°Р»РѕРі - РґРёСЂСЂРµРєС‚РѕСЂРёСЏ!");
+				if (cachepath.mkdirs())
+					System.out.println("РљР°С‚Р°Р»РѕРі СЃРѕР·РґР°РЅ!");
+
+				else {
+					System.out.println("РљР°С‚Р°Р»РѕРі РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚!");
+				}
+				System.out.println(cachepath.getAbsolutePath());
+			} catch (Exception e) {
+				// if any error occurs
+				e.printStackTrace();
 			}
 		}
 	}
-} // /:~
+}// /:~
 
 class OneServer extends Thread {
-	//серверные переменные
+	//СЃРµСЂРІРµСЂРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 	private Socket socket;
 	private BufferedReader in;
 	private PrintWriter out;
-	//интерфейс 
+	//РёРЅС‚РµСЂС„РµР№СЃ 
 	private Weather factWeather;
-	
+
 	public OneServer(Socket s) throws IOException {
 		socket = s;
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		// Включаем автоматическое выталкивание:
+		// Р’РєР»СЋС‡Р°РµРј Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРµ РІС‹С‚Р°Р»РєРёРІР°РЅРёРµ:
 		out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket
 				.getOutputStream())), true);
-		// Если любой из вышеприведенных вызовов приведет к
-		// возникновению исключения, то вызывающий отвечает за
-		// закрытие сокета. В противном случае, нить
-		// закроет его.
-		start(); // вызываем run()
+		// Р•СЃР»Рё Р»СЋР±РѕР№ РёР· РІС‹С€РµРїСЂРёРІРµРґРµРЅРЅС‹С… РІС‹Р·РѕРІРѕРІ РїСЂРёРІРµРґРµС‚ Рє
+		// РІРѕР·РЅРёРєРЅРѕРІРµРЅРёСЋ РёСЃРєР»СЋС‡РµРЅРёСЏ, С‚Рѕ РІС‹Р·С‹РІР°СЋС‰РёР№ РѕС‚РІРµС‡Р°РµС‚ Р·Р°
+		// Р·Р°РєСЂС‹С‚РёРµ СЃРѕРєРµС‚Р°. Р’ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ, РЅРёС‚СЊ
+		// Р·Р°РєСЂРѕРµС‚ РµРіРѕ.
+		start(); // РІС‹Р·С‹РІР°РµРј run()
 	}
-	   
+
 	public void run() {
 		try {
-			String str = in.readLine(); 		//получаем от клиента номер города
-        	//out.println(str);
-        	factWeather = YWeatherParser.getWeather(str); 	//получаем погоду города из интернета/кэша 
-        	if(factWeather != null)
-        		out.println(factWeather.toString());
-        	else
-        		out.println("");
+			String str = in.readLine(); 		//РїРѕР»СѓС‡Р°РµРј РѕС‚ РєР»РёРµРЅС‚Р° РЅРѕРјРµСЂ РіРѕСЂРѕРґР°
+			//out.println(str);
+			factWeather = YWeatherParser.getWeather(str); 	//РїРѕР»СѓС‡Р°РµРј РїРѕРіРѕРґСѓ РіРѕСЂРѕРґР° РёР· РёРЅС‚РµСЂРЅРµС‚Р°/РєСЌС€Р°
+			if(factWeather != null)
+				out.println(factWeather.toString());
+			else
+				out.println("");
 		}
 		catch (IOException e) {
 			System.err.println("IO Exception");
@@ -81,7 +91,7 @@ class OneServer extends Thread {
 			}
 			catch (IOException e) {
 				System.err.println("Socket not closed");
-        	}
+			}
 		}
 	}
 }

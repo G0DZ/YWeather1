@@ -13,40 +13,43 @@ import org.w3c.dom.*;
 public class YWeatherParser {
 	private static Weather factWeather = new Weather();
 	//private static Weather tommorowWeather = new Weather();
-	
+
 	public static Weather getWeather(String cityID) {
-		//проверяем, есть ли файл, и не превышен ли порог времени хранения
+		//РїСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё С„Р°Р№Р», Рё РЅРµ РїСЂРµРІС‹С€РµРЅ Р»Рё РїРѕСЂРѕРі РІСЂРµРјРµРЅРё С…СЂР°РЅРµРЅРёСЏ
+		System.out.print("РџРѕРїС‹С‚РєР° РїРѕР»СѓС‡РёС‚СЊ РїРѕРіРѕРґСѓ СЃ СЃРµСЂРІРµСЂР°. РџСЂРѕРІРµСЂРєР° РЅР° РЅР°Р»РёС‡РёРµ РєСЌС€Р°...");
 		if(checkCache(cityID))
-		{// если файл есть - загрузим информацию из него
+		{// РµСЃР»Рё С„Р°Р№Р» РµСЃС‚СЊ - Р·Р°РіСЂСѓР·РёРј РёРЅС„РѕСЂРјР°С†РёСЋ РёР· РЅРµРіРѕ
+			System.out.println(" РЈСЃРїРµС€РЅРѕ.\nР—Р°РіСЂСѓР·РєР° РёРЅС„РѕСЂРјР°С†РёРё РёР· РєСЌС€Р°...");
 			loadFile(cityID);
 		}
-		else{ //если файла нет или он "просрочен", идем в интернет
+		else{ //РµСЃР»Рё С„Р°Р№Р»Р° РЅРµС‚ РёР»Рё РѕРЅ "РїСЂРѕСЃСЂРѕС‡РµРЅ", РёРґРµРј РІ РёРЅС‚РµСЂРЅРµС‚
+			System.out.println(" РќРµСѓРґР°С‡Р°. РљСЌС€ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚.");
 			Document doc = null;
 			try {
 				URL url = new URL("http://export.yandex.ru/weather-ng/forecasts/"
-						+ cityID + ".xml");							
+						+ cityID + ".xml");
 				URLConnection uc = url.openConnection();
-				InputStream is = uc.getInputStream();//создали поток
+				InputStream is = uc.getInputStream();//СЃРѕР·РґР°Р»Рё РїРѕС‚РѕРє
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
-				doc = db.parse(is);//непосредственно парсинг
-				doc.getDocumentElement().normalize();							
-				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null,
-							"Ошибка при запросе к Яндекс АПИ");
-					return null;
-					//ex.printStackTrace();
-				}
+				doc = db.parse(is);//РЅРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅРѕ РїР°СЂСЃРёРЅРі
+				doc.getDocumentElement().normalize();
+			} catch (Exception ex) {
+				JOptionPane.showMessageDialog(null,
+						"РћС€РёР±РєР° РїСЂРё Р·Р°РїСЂРѕСЃРµ Рє РЇРЅРґРµРєСЃ РђРџР");
+				return null;
+				//ex.printStackTrace();
+			}
 			parseDoc(doc);
 			writeFile(cityID);
-			}
+		}
 		System.out.println(factWeather.toString());
 		return factWeather;
-		}
-		
-	//получаем погоду, разбирая массив строк
-	//единый интерфейс, используется при разборе текстового файла и ответа, приходящего клиенту
-	//потому имеет видимость public
+	}
+
+	//РїРѕР»СѓС‡Р°РµРј РїРѕРіРѕРґСѓ, СЂР°Р·Р±РёСЂР°СЏ РјР°СЃСЃРёРІ СЃС‚СЂРѕРє
+	//РµРґРёРЅС‹Р№ РёРЅС‚РµСЂС„РµР№СЃ, РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РїСЂРё СЂР°Р·Р±РѕСЂРµ С‚РµРєСЃС‚РѕРІРѕРіРѕ С„Р°Р№Р»Р° Рё РѕС‚РІРµС‚Р°, РїСЂРёС…РѕРґСЏС‰РµРіРѕ РєР»РёРµРЅС‚Сѓ
+	//РїРѕС‚РѕРјСѓ РёРјРµРµС‚ РІРёРґРёРјРѕСЃС‚СЊ public
 	public static Weather parseAnswer(ArrayList<String> list){
 		String str = null;
 		Weather w = new Weather();
@@ -68,119 +71,125 @@ public class YWeatherParser {
 		w.humidity = str.substring(9,str.length());	//humidity = TEST
 		str = list.get(8);
 		w.pressure = str.substring(9,str.length());	//pressure = TEST
+		str = list.get(9);
+		w.imageName = str.substring(10,str.length());//imageName=TEST
 		//System.out.println("HELLO\n\n"+w.toString());
 		return w;
 	}
-		
+
 	private static boolean checkCache(String cityID){
 		File cachefile = new File("cache/"+cityID+".txt");
 		if(cachefile.exists())
 		{
 			long a = System.currentTimeMillis();
 			long b = cachefile.lastModified();
-			if((a-b) > 1000*60*60) //один час в миллисекундах
+			if((a-b) > 1000*60*60) //РѕРґРёРЅ С‡Р°СЃ РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…
 			{
-			//	System.out.print("Файл устарел, GHBDTN!");
+				System.out.print("Р¤Р°Р№Р» СѓСЃС‚Р°СЂРµР», GHBDTN!");
 				return false;
 			}
-			//System.out.print("Файл с таким именем существует!");
-			return true;	
+			System.out.print("Р¤Р°Р№Р» СЃ С‚Р°РєРёРј РёРјРµРЅРµРј СЃСѓС‰РµСЃС‚РІСѓРµС‚!");
+			return true;
 		}
-		//System.out.print("Файл с таким именем НЕ существует!");
+		System.out.print("Р¤Р°Р№Р» СЃ С‚Р°РєРёРј РёРјРµРЅРµРј РќР• СЃСѓС‰РµСЃС‚РІСѓРµС‚!");
 		return false;
 	}
-	
+
 	public static ArrayList<String> splitAnswer(String str){
-		str = str.replace(" ","");
-		StringTokenizer stk = new StringTokenizer(str,","); //логические отрезки разделены запятыми	    
-	    int z = stk.countTokens(); //количество разделителей в строке
-	    ArrayList<String> list = new ArrayList<String>();
-	    //System.out.println("Тестирование метода parseAnswer\n");
-	    for(int i = 0; i<z; i++)
-	    {
-	    	list.add(stk.nextToken());
-	    	//System.out.println(list.get(i));
-	    }
-	    return list;
+		//str = str.replace("","");
+		StringTokenizer stk = new StringTokenizer(str,"$"); //Р»РѕРіРёС‡РµСЃРєРёРµ РѕС‚СЂРµР·РєРё СЂР°Р·РґРµР»РµРЅС‹ Р·Р°РїСЏС‚С‹РјРё
+		int z = stk.countTokens(); //РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р·РґРµР»РёС‚РµР»РµР№ РІ СЃС‚СЂРѕРєРµ
+		ArrayList<String> list = new ArrayList<>();
+		//System.out.println("РўРµСЃС‚РёСЂРѕРІР°РЅРёРµ РјРµС‚РѕРґР° parseAnswer\n");
+		for(int i = 0; i<z; i++)
+		{
+			list.add(stk.nextToken());
+			//System.out.println(list.get(i));
+		}
+		return list;
 	}
-	
+
 	private static void parseDoc(Document doc){
-		//если есть интернет и запросы верны - аттрибуты не будут пусты.
+		//РµСЃР»Рё РµСЃС‚СЊ РёРЅС‚РµСЂРЅРµС‚ Рё Р·Р°РїСЂРѕСЃС‹ РІРµСЂРЅС‹ - Р°С‚С‚СЂРёР±СѓС‚С‹ РЅРµ Р±СѓРґСѓС‚ РїСѓСЃС‚С‹.
 		NamedNodeMap attr = doc.getElementsByTagName("forecast").item(0).getAttributes();
-		//из этого родителя нам и нужно содержимое
+		//РёР· СЌС‚РѕРіРѕ СЂРѕРґРёС‚РµР»СЏ РЅР°Рј Рё РЅСѓР¶РЅРѕ СЃРѕРґРµСЂР¶РёРјРѕРµ
 		factWeather.city = attr.getNamedItem("city").getNodeValue();
 		factWeather.country = attr.getNamedItem("country").getNodeValue();
 		//
 		NodeList nl = doc.getElementsByTagName("fact").item(0).getChildNodes();
-        for (int i = 0; i < nl.getLength(); i++) {
-            Node nNode = nl.item(i);
-            //строковый свитч
-            switch(nNode.getNodeName())
-            {
-            case "observation_time":
-            	factWeather.time = nNode.getTextContent();
-            	break;
-            case "temperature":
-            	factWeather.temperature = nNode.getTextContent();
-            	break;
-            case "weather_type":
-            	factWeather.weatherType = nNode.getTextContent();
-            	break;
-            case "wind_direction":
-            	factWeather.windDirection = nNode.getTextContent();
-            	break;
-            case "wind_speed":
-            	factWeather.windSpeed = nNode.getTextContent();
-            	break;
-            case "pressure":
-            	factWeather.pressure = nNode.getTextContent();
-            	break;
-            case "humidity":
-            	factWeather.humidity = nNode.getTextContent();
-            	break;
-            }
-        }
-        System.out.println("Погода загружена из интернета. Попытка чтения");
-        System.out.print(factWeather.toString());
+		for (int i = 0; i < nl.getLength(); i++) {
+			Node nNode = nl.item(i);
+			//СЃС‚СЂРѕРєРѕРІС‹Р№ СЃРІРёС‚С‡
+			switch(nNode.getNodeName())
+			{
+				case "observation_time":
+					factWeather.time = nNode.getTextContent();
+					break;
+				case "temperature":
+					factWeather.temperature = nNode.getTextContent();
+					break;
+				case "weather_type":
+					factWeather.weatherType = nNode.getTextContent();
+					break;
+				case "wind_direction":
+					factWeather.windDirection = nNode.getTextContent();
+					break;
+				case "wind_speed":
+					factWeather.windSpeed = nNode.getTextContent();
+					break;
+				case "pressure":
+					factWeather.pressure = nNode.getTextContent();
+					break;
+				case "humidity":
+					factWeather.humidity = nNode.getTextContent();
+					break;
+				case "image-v3":
+					factWeather.imageName = nNode.getTextContent();
+					break;
+			}
+		}
+		System.out.println("РџРѕРіРѕРґР° Р·Р°РіСЂСѓР¶РµРЅР° РёР· РёРЅС‚РµСЂРЅРµС‚Р°.");
+		System.out.print(factWeather.toString());
 	}
-	
+
 	private static void writeFile(String cityID){
 		File cachefile = new File("cache/"+cityID+".txt");
 		try(FileWriter writer = new FileWriter(cachefile, false))
-        {
-            writer.write("city = " + factWeather.city+"\n");
-            writer.append("country = " + factWeather.country+"\n");
-            writer.append("time = " + factWeather.time+"\n");
-            writer.append("temperature = " + factWeather.temperature+"\n");
-            writer.append("weatherType = " + factWeather.weatherType+"\n");
-            writer.append("windDirection = " + factWeather.windDirection+"\n");
-            writer.append("windSpeed = " + factWeather.windSpeed+"\n");
-            writer.append("humidity = " + factWeather.humidity+"\n");
-            writer.append("pressure = " + factWeather.pressure+"\n");
-        }
-        catch(IOException ex){
-            System.out.println(ex.getMessage());
-        } 
+		{
+			writer.write("city=" + factWeather.city+"\n");
+			writer.append("country=" + factWeather.country+"\n");
+			writer.append("time=" + factWeather.time + "\n");
+			writer.append("temperature=" + factWeather.temperature+"\n");
+			writer.append("weatherType=" + factWeather.weatherType+"\n");
+			writer.append("windDirection=" + factWeather.windDirection+"\n");
+			writer.append("windSpeed=" + factWeather.windSpeed+"\n");
+			writer.append("humidity=" + factWeather.humidity+"\n");
+			writer.append("pressure=" + factWeather.pressure+"\n");
+			writer.append("imageName=" + factWeather.imageName+"\n");
+		}
+		catch(IOException ex){
+			System.out.println(ex.getMessage());
+		}
 	}
-	
+
 	private static void loadFile(String cityID){
 		File cachefile = new File("cache/"+cityID+".txt");
 		try(BufferedReader reader = new BufferedReader(new FileReader(cachefile)))
-        {
-			System.out.println("Обнаружен файл. Попытка чтения");
-			ArrayList<String> list = new ArrayList<String>(); //arraylist для хранения содержимого файла
-			String str = null; //строка, используемая для записи
+		{
+			System.out.println("РћР±РЅР°СЂСѓР¶РµРЅ С„Р°Р№Р». РџРѕРїС‹С‚РєР° С‡С‚РµРЅРёСЏ");
+			ArrayList<String> list = new ArrayList<>(); //arraylist РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ С„Р°Р№Р»Р°
+			String str = null; //СЃС‚СЂРѕРєР°, РёСЃРїРѕР»СЊР·СѓРµРјР°СЏ РґР»СЏ Р·Р°РїРёСЃРё
 			while((str=reader.readLine())!=null)
 			{
-				str = str.replace(" ", "");
+				//str = str.replace(" ", "");
 				list.add(str);
 				System.out.println(str);
 			}
-			//получаем погоду, разбирая массив строк
+			//РїРѕР»СѓС‡Р°РµРј РїРѕРіРѕРґСѓ, СЂР°Р·Р±РёСЂР°СЏ РјР°СЃСЃРёРІ СЃС‚СЂРѕРє
 			factWeather = YWeatherParser.parseAnswer(list);
-        }
-        catch(IOException ex){
-            System.out.println(ex.getMessage());
-        } 
+		}
+		catch(IOException ex){
+			System.out.println(ex.getMessage());
+		}
 	}
 }

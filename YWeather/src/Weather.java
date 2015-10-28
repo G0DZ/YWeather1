@@ -8,19 +8,18 @@ public class Weather {
 	String windSpeed;
 	String humidity;
 	String pressure;
-	
-	public Weather() {
-		// TODO Auto-generated constructor stub
-	}
+	String imageName;
+
 	public String toString() {
 		return  "city=" + city
-				+ ", country=" + country 
-				+ ", time=" + time
-				+ ", temperature=" + temperature
-				+ ", weatherType=" + weatherType
-				+ ", windDirection=" + windDirection
-				+ ", windSpeed=" + windSpeed
-				+ ", humidity=" + humidity
-				+ ", pressure=" + pressure;
+				+ "$country=" + country
+				+ "$time=" + time
+				+ "$temperature=" + temperature
+				+ "$weatherType=" + weatherType
+				+ "$windDirection=" + windDirection
+				+ "$windSpeed=" + windSpeed
+				+ "$humidity=" + humidity
+				+ "$pressure=" + pressure
+				+"$imageName=" + imageName;
 	}
 }
