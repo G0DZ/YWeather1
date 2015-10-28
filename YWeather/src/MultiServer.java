@@ -5,7 +5,7 @@ import java.net.*;
 
 public class MultiServer {
 	static final int PORT = 9876;
-   
+
 	public static void main(String[] args) throws IOException {
 		//запуск сервера
 		ServerSocket s = new ServerSocket(PORT);
@@ -29,7 +29,7 @@ public class MultiServer {
 			s.close();
 		}
 	}
-	
+
 	private static class InitCache{
 		private static void initializeServer(){
 			File cachepath = new File("cache");
@@ -48,7 +48,7 @@ class OneServer extends Thread {
 	private PrintWriter out;
 	//интерфейс 
 	private Weather factWeather;
-	
+
 	public OneServer(Socket s) throws IOException {
 		socket = s;
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -61,16 +61,16 @@ class OneServer extends Thread {
 		// закроет его.
 		start(); // вызываем run()
 	}
-	   
+
 	public void run() {
 		try {
 			String str = in.readLine(); 		//получаем от клиента номер города
-        	//out.println(str);
-        	factWeather = YWeatherParser.getWeather(str); 	//получаем погоду города из интернета/кэша 
-        	if(factWeather != null)
-        		out.println(factWeather.toString());
-        	else
-        		out.println("");
+			//out.println(str);
+			factWeather = YWeatherParser.getWeather(str); 	//получаем погоду города из интернета/кэша
+			if(factWeather != null)
+				out.println(factWeather.toString());
+			else
+				out.println("");
 		}
 		catch (IOException e) {
 			System.err.println("IO Exception");
@@ -81,7 +81,7 @@ class OneServer extends Thread {
 			}
 			catch (IOException e) {
 				System.err.println("Socket not closed");
-        	}
+			}
 		}
 	}
 }

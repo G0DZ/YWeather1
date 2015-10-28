@@ -1,10 +1,13 @@
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -13,63 +16,112 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class ClientFrame extends JFrame {
 	private static final long serialVersionUID = 5506524279338381258L;
-	static JButton button_start;	//кнопка обновления погоды
-	JTextField textField; 
-	JTextArea TEST_WeatherText; //вывод погоды в текстовом виде
-	static String button_start_txt = "Обновить";
+	//Р±СѓРґРµРј РѕРїРёСЃС‹РІР°С‚СЊ РёСЃРїРѕР»СЊР·СѓРµРјС‹Рµ СЌР»РµРјРµРЅС‚С‹ СЃРІРµСЂС…Сѓ-РІРЅРёР·
+	JLabel helloTextLabel;
+	JLabel cityName;
+	JLabel nowLabel;
+	JLabel timeLabel;
+	JPanel weatherSquare;
+	JLabel weatherImage;
+	JLabel temperatureLabel;
+	JLabel weatherTypeText;
+
+	static JButton button_start;	//РєРЅРѕРїРєР° РѕР±РЅРѕРІР»РµРЅРёСЏ РїРѕРіРѕРґС‹
+	JTextField textField;
+	JTextArea TEST_WeatherText; //РІС‹РІРѕРґ РїРѕРіРѕРґС‹ РІ С‚РµРєСЃС‚РѕРІРѕРј РІРёРґРµ
+	static String button_start_txt = "РћР±РЅРѕРІРёС‚СЊ";
 	JPanel p1;
 	public ClientFrame(){
-		//поехали
-		try { //стиль оформления
+		//РїРѕРµС…Р°Р»Рё
+		try { //СЃС‚РёР»СЊ РѕС„РѕСЂРјР»РµРЅРёСЏ
 			UIManager.setLookAndFeel(
-			        UIManager.getSystemLookAndFeelClassName());
+					UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException
 				| IllegalAccessException | UnsupportedLookAndFeelException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		button_start = new JButton("Cursor.HAND_CURSOR"); //создаем кнопку.
+
+		//РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїРµСЂРµРјРµРЅРЅС‹С…
+		helloTextLabel = new JLabel("РџРѕРіРѕРґР° РІ РіРѕСЂРѕРґРµ: ");
+		cityName = new JLabel();
+		nowLabel = new JLabel("CРµР№С‡Р°СЃ: ");
+		timeLabel = new JLabel();
+		weatherSquare = new JPanel();
+		weatherImage = new JLabel();
+		temperatureLabel = new JLabel();
+		weatherTypeText = new JLabel();
+
+		button_start = new JButton("Cursor.HAND_CURSOR"); //СЃРѕР·РґР°РµРј РєРЅРѕРїРєСѓ.
 		button_start.setText(button_start_txt);
-		textField = new JTextField();
+		textField = new JTextField("26063");
 		TEST_WeatherText = new JTextArea("");
 		TEST_WeatherText.setEnabled(false);
 		TEST_WeatherText.setFont(new Font("Calibri", Font.PLAIN, 16));
-		
-		//устанавливаем размер элементов
-		TEST_WeatherText.setBounds(0, 0, 300, 300);
-		textField.setBounds(50, 305, 200, 20);
-		button_start.setBounds(50, 330, 200, 30);
-		
-		//настраиваем действия на кнопки
+
+
+		//СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЂР°Р·РјРµСЂ СЌР»РµРјРµРЅС‚РѕРІ
+		helloTextLabel.setBounds(10, 0, 145, 20);
+		cityName.setBounds(147, 0, 403, 20);
+		nowLabel.setBounds(10, 25, 65, 20);
+		timeLabel.setBounds(68, 27, 50, 18);
+		weatherSquare.setBounds(10, 50, 280, 90);
+		weatherImage.setBounds(20, 60, 48, 48);
+		temperatureLabel.setBounds(23, 110, 100, 30);
+		weatherTypeText.setBounds(80, 65, 200, 30);
+
+		TEST_WeatherText.setBounds(0, 90, 300, 250);
+		textField.setBounds(50, 325, 200, 20);
+		button_start.setBounds(50, 350, 200, 30);
+
+
+		//РЅР°СЃС‚СЂР°РёРІР°РµРј РґРµР№СЃС‚РІРёСЏ РЅР° РєРЅРѕРїРєРё
 		ClientFrameEngine cEngine = new ClientFrameEngine(this);
 		button_start.addActionListener(cEngine);
-		
-		//добавляем элементы на панель
+
+		//РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ РЅР°СЃС‚СЂРѕР№РєР° СЌР»РµРјРµРЅС‚РѕРІ (РЁСЂРёС„С‚ Рё РїСЂРѕС‡РµРµ)
+		helloTextLabel.setFont(new Font("Verdana", Font.PLAIN, 14));
+		cityName.setFont(new Font("Verdana", Font.BOLD, 14));
+		nowLabel.setFont(new Font("TimesRoman", Font.PLAIN, 14));
+		timeLabel.setFont(new Font("TimesRoman", Font.BOLD, 12));
+		weatherSquare.setBackground(new Color(255,248,205));
+		temperatureLabel.setFont(new Font("Verdana", Font.BOLD, 16));
+		weatherTypeText.setFont(new Font("Verdana", Font.PLAIN, 12));
+
+		//РґРѕР±Р°РІР»СЏРµРј СЌР»РµРјРµРЅС‚С‹ РЅР° РїР°РЅРµР»СЊ
 		p1 = new JPanel();
 		p1.setLayout(null);
-		p1.add(TEST_WeatherText);
+		p1.add(helloTextLabel);
+		p1.add(cityName);
+		p1.add(nowLabel);
+		p1.add(timeLabel);
+		p1.add(weatherImage);
+		p1.add(temperatureLabel);
+		p1.add(weatherTypeText);
+		p1.add(weatherSquare); //РїРѕСЃР»РµРґРЅРёР№ РІ СЃРїРёСЃРєРµ
+
+		//p1.add(TEST_WeatherText);
 		p1.add(textField);
 		p1.add(button_start);
-		getContentPane().add(p1);
-		setPreferredSize(new Dimension(300, 395));
-		
-		this.pack(); 
-		
-		this.setTitle("YWeather");									//Заголовок окна
-	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 	    //действие при закрытии
-		this.setResizable(false);            						// Запрет на изменение размера экрана              
-        //Точка размещения экрана
-        Point center = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
-        int w = this.getWidth();
-        int h = this.getHeight();
-        center.x = center.x - w/2; 
-        center.y = center.y - h/2;
-        this.setLocation(center);
-        this.setVisible(true);										// Отображаю окно 
-	  }
 
-	  public static void main(String[] args) { //эта функция может быть и в другом классе
-	    new ClientFrame(); //Создаем экземпляр нашего приложения
-	  }
+		getContentPane().add(p1);
+		setPreferredSize(new Dimension(550, 495));
+
+		this.pack();
+		this.setTitle("YWeather");									//Р—Р°РіРѕР»РѕРІРѕРє РѕРєРЅР°
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 	    //РґРµР№СЃС‚РІРёРµ РїСЂРё Р·Р°РєСЂС‹С‚РёРё
+		this.setResizable(false);            						// Р—Р°РїСЂРµС‚ РЅР° РёР·РјРµРЅРµРЅРёРµ СЂР°Р·РјРµСЂР° СЌРєСЂР°РЅР°              
+		//РўРѕС‡РєР° СЂР°Р·РјРµС‰РµРЅРёСЏ СЌРєСЂР°РЅР°
+		Point center = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
+		int w = this.getWidth();
+		int h = this.getHeight();
+		center.x = center.x - w/2;
+		center.y = center.y - h/2;
+		this.setLocation(center);
+		this.setVisible(true);										// РћС‚РѕР±СЂР°Р¶Р°СЋ РѕРєРЅРѕ
+	}
+
+	public static void main(String[] args) { //СЌС‚Р° С„СѓРЅРєС†РёСЏ РјРѕР¶РµС‚ Р±С‹С‚СЊ Рё РІ РґСЂСѓРіРѕРј РєР»Р°СЃСЃРµ
+		new ClientFrame(); //РЎРѕР·РґР°РµРј СЌРєР·РµРјРїР»СЏСЂ РЅР°С€РµРіРѕ РїСЂРёР»РѕР¶РµРЅРёСЏ
+	}
 }

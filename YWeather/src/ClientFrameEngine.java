@@ -8,15 +8,18 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.sql.Time;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+
 public class ClientFrameEngine implements ActionListener{
 	private ClientFrame parent;
 	private Weather clientWeather;
 	private String cityID;
-	
+
 	public ClientFrameEngine(ClientFrame parent) {
 		this.parent = parent;
 	}
@@ -24,32 +27,42 @@ public class ClientFrameEngine implements ActionListener{
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 		JButton clickedButton =  (JButton) arg0.getSource();
-    	// Если это кнопка "Ввод исходных данных"
-    	String actioncommand = clickedButton.getActionCommand();
-    	if (actioncommand == ClientFrame.button_start.getText()) {
-    		cityID = parent.textField.getText();
-    		if(!cityID.equals(""))
-    		{
-    			syncConnect();
-    			if(clientWeather!= null)
-    			{
-    				ArrayList<String> list = YWeatherParser.splitAnswer(clientWeather.toString());
-    				StringBuilder str = new StringBuilder("");
-    				for(int i = 0; i < list.size(); i++)
-    				{
-    					str.append(list.get(i));
-    					str.append("\n");
-    				}
-    				parent.TEST_WeatherText.setText(str.toString());
-    			}
-    		}
-    		else
-    		{
-    			JOptionPane.showMessageDialog(null, "Строка ввода города пуста!");
-    		}
-    	}
+		// Р•СЃР»Рё СЌС‚Рѕ РєРЅРѕРїРєР° "Р’РІРѕРґ РёСЃС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…"
+		String actioncommand = clickedButton.getActionCommand();
+		if (actioncommand.equals(ClientFrame.button_start.getText())){
+			cityID = parent.textField.getText();
+			if(!cityID.equals(""))
+			{
+				syncConnect();
+				if(clientWeather!= null)
+				{
+					ArrayList<String> list = YWeatherParser.splitAnswer(clientWeather.toString());
+					StringBuilder str = new StringBuilder("");
+					for(int i = 0; i < list.size(); i++)
+					{
+						str.append(list.get(i));
+						str.append("\n");
+					}
+					//РїСЂРёСЃРІРѕРµРЅРёРµ Р·РЅР°С‡РµРЅРёР№ СЌР»РµРјРµРЅС‚РѕРІ С„РѕСЂРј
+					//СЃРѕРіР»Р°СЃРЅРѕ РїРѕР»СѓС‡РµРЅРЅС‹Рј РїРѕР»СЏРј
+					parent.TEST_WeatherText.setText(str.toString());
+					parent.cityName.setText(clientWeather.city+", "+clientWeather.country);
+					parent.timeLabel.setText(new Time(System.currentTimeMillis()).toString());
+					parent.weatherImage.setIcon(new ImageIcon("image/"+clientWeather.imageName+".png"));
+					if(Integer.parseInt(clientWeather.temperature)>0)
+						parent.temperatureLabel.setText("+"+clientWeather.temperature+" \u00b0"+"C");
+					else
+						parent.temperatureLabel.setText(clientWeather.temperature+" \u00b0"+"C");
+					parent.weatherTypeText.setText(clientWeather.weatherType);
+				}
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(null, "РЎС‚СЂРѕРєР° РІРІРѕРґР° РіРѕСЂРѕРґР° РїСѓСЃС‚Р°!");
+			}
+		}
 	}
-	
+
 	public void syncConnect()
 	{
 		try{
@@ -57,36 +70,38 @@ public class ClientFrameEngine implements ActionListener{
 			System.out.println("Connection address = " + addr);
 			System.out.print("Trying to connect..");
 			try(Socket socket = new Socket(addr, MultiServer.PORT)) {
-				  System.out.println(" Success!");
-			      System.out.println("Socket info = " + socket);
-			      BufferedReader in = new BufferedReader(new InputStreamReader(socket
-			            .getInputStream()));
-			      // Вывод автоматически Output выталкивается PrintWriter'ом.
-			      PrintWriter out = new PrintWriter(new BufferedWriter(
-			            new OutputStreamWriter(socket.getOutputStream())), true);
-			      
-			      out.println(cityID);
-			      //out.println("26063"); //передача серверу номера запрашиваемого города (номера на яндексе)
-			      System.out.print("Trying to getting answer...");
-			      String str = in.readLine();
-			      if(!str.equals(""))
-			      {
-			    	  System.out.println("Success!");
-			    	  //разбиваем полученый ответ на массив строк
-			    	  ArrayList<String> list = YWeatherParser.splitAnswer(str);
- 			  	      //получаем погоду, разбирая массив строк
-			    	  clientWeather = YWeatherParser.parseAnswer(list);
-			    	  //System.out.println(str);
-			    	  System.out.println("Result: "+clientWeather.toString());
-			      }
-			      else
-			    	  System.out.println("Failed!");
-			      System.out.println("Closing socket...");
-			   }
+				System.out.println(" Success!");
+				System.out.println("Socket info = " + socket);
+				BufferedReader in = new BufferedReader(new InputStreamReader(socket
+						.getInputStream()));
+				// Р’С‹РІРѕРґ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё Output РІС‹С‚Р°Р»РєРёРІР°РµС‚СЃСЏ PrintWriter'РѕРј.
+				PrintWriter out = new PrintWriter(new BufferedWriter(
+						new OutputStreamWriter(socket.getOutputStream())), true);
+
+				out.println(cityID);
+				//out.println("26063"); //РїРµСЂРµРґР°С‡Р° СЃРµСЂРІРµСЂСѓ РЅРѕРјРµСЂР° Р·Р°РїСЂР°С€РёРІР°РµРјРѕРіРѕ РіРѕСЂРѕРґР° (РЅРѕРјРµСЂР° РЅР° СЏРЅРґРµРєСЃРµ)
+				System.out.print("Trying to getting answer...");
+				String str = in.readLine();
+				if(!str.equals(""))
+				{
+					System.out.println("Success!");
+					//СЂР°Р·Р±РёРІР°РµРј РїРѕР»СѓС‡РµРЅС‹Р№ РѕС‚РІРµС‚ РЅР° РјР°СЃСЃРёРІ СЃС‚СЂРѕРє
+					ArrayList<String> list = YWeatherParser.splitAnswer(str);
+					//РїРѕР»СѓС‡Р°РµРј РїРѕРіРѕРґСѓ, СЂР°Р·Р±РёСЂР°СЏ РјР°СЃСЃРёРІ СЃС‚СЂРѕРє
+					clientWeather = YWeatherParser.parseAnswer(list);
+					//System.out.println(str);
+					System.out.println("Result: "+clientWeather.toString());
+				}
+				else
+					System.out.println("Failed!");
+				System.out.println("Closing socket...");
+			}
 			catch (Exception e){
 				System.out.println(" Failed!");
 			}
 		}
 		catch (IOException e){}
 	}
+
+
 }
