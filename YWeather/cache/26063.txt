@@ -1,9 +1,0 @@
-city = Санкт-Петербург
-country = Россия
-time = 2015-10-16T10:00:00
-temperature = 8
-weatherType = ясно
-windDirection = sw
-windSpeed = 5.0
-humidity = 76
-pressure = 771

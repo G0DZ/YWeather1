@@ -32,6 +32,7 @@ public class ClientFrameEngine implements ActionListener{
 			cityID = parent.textField.getText();
 			if(!cityID.equals(""))
 			{
+
 				syncConnect();
 				if(clientWeather!= null)
 				{
